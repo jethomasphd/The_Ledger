@@ -34,6 +34,19 @@ export default function Settings({ apiKeys, onUpdate, onClose }: SettingsProps) 
         </p>
 
         <div className="space-y-4">
+          <p className="text-xs text-chamber-muted leading-relaxed">
+            Both APIs use the same key from{' '}
+            <a
+              href="https://api.data.gov/signup/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-chamber-link hover:underline"
+            >
+              api.data.gov/signup
+            </a>
+            . One registration gives you a key that works for both Congress.gov and govinfo.
+          </p>
+
           <div>
             <label className="block text-xs text-chamber-muted mb-1">
               Congress.gov API Key
@@ -42,19 +55,11 @@ export default function Settings({ apiKeys, onUpdate, onClose }: SettingsProps) 
               type="password"
               value={apiKeys.congressGov}
               onChange={(e) => onUpdate({ ...apiKeys, congressGov: e.target.value })}
-              placeholder="api.congress.gov/sign-up"
+              placeholder="Your api.data.gov key"
               className="w-full bg-chamber-bg border border-chamber-border px-3 py-2
                          text-sm text-chamber-text placeholder:text-chamber-muted/40
                          focus:border-chamber-muted focus:outline-none"
             />
-            <a
-              href="https://api.congress.gov/sign-up/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] text-chamber-link hover:underline mt-1 inline-block"
-            >
-              Get a free key
-            </a>
           </div>
 
           <div>
@@ -65,19 +70,11 @@ export default function Settings({ apiKeys, onUpdate, onClose }: SettingsProps) 
               type="password"
               value={apiKeys.govinfo}
               onChange={(e) => onUpdate({ ...apiKeys, govinfo: e.target.value })}
-              placeholder="api.govinfo.gov/docs/signup"
+              placeholder="Same key works here"
               className="w-full bg-chamber-bg border border-chamber-border px-3 py-2
                          text-sm text-chamber-text placeholder:text-chamber-muted/40
                          focus:border-chamber-muted focus:outline-none"
             />
-            <a
-              href="https://api.govinfo.gov/docs/signup"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] text-chamber-link hover:underline mt-1 inline-block"
-            >
-              Get a free key
-            </a>
           </div>
         </div>
 
