@@ -48,14 +48,33 @@ Open `http://localhost:5173` in your browser.
 
 ## API Keys
 
-The Ledger requires free API keys from government data providers:
+The Ledger requires a free API key from the U.S. government's open data platform:
 
-1. **Congress.gov API Key** — [Sign up here](https://api.congress.gov/sign-up/)
-2. **govinfo API Key** — [Sign up here](https://api.govinfo.gov/docs/signup)
+**Get your key here: [api.data.gov/signup](https://api.data.gov/signup/)**
 
-Enter your keys in the Settings drawer (accessible from the top bar during any mission). Keys are stored only in your browser's `localStorage` and are sent directly to the respective government APIs. No intermediary server.
+One registration gives you a key that works for both Congress.gov and govinfo APIs.
 
-## Building for Production
+Enter your key in the Settings drawer (accessible from the top bar during any mission). Keys are stored only in your browser's `localStorage` and are sent directly to the respective government APIs. No intermediary server.
+
+## Deployment (Cloudflare Pages)
+
+The Ledger is deployed at **[the-ledger.pages.dev](https://the-ledger.pages.dev)** via Cloudflare Pages.
+
+To deploy your own:
+
+1. Push this repo to GitHub
+2. In the Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**
+3. Select the repository and configure:
+   - **Project name**: `the-ledger`
+   - **Production branch**: `main`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+   - **Root directory**: `app`
+4. Deploy
+
+No environment variables needed — all API keys are entered by users in-browser.
+
+## Building Locally
 
 ```bash
 cd app
