@@ -1,12 +1,496 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Ledger</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ledger</title>
+  <meta name="description" content="Search U.S. federal legislation in plain English. AI translates the jargon, you curate the evidence, every claim cites its source. The public record, returned to the public.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- _redirects (for Cloudflare Pages):
+    /*  /index.html  200
+  -->
+</head>
+<body>
+
+  <!-- ═══ CINEMATIC INTRO ═══ -->
+  <div id="intro">
+    <div class="intro-glow"></div>
+    <div id="skip-intro">skip</div>
+
+    <div class="intro-stage">
+      <div class="intro-card" id="intro-card">
+
+        <!-- Front face: typewriter -->
+        <div class="intro-card-front">
+          <div class="intro-lines" id="intro-lines">
+            <p id="ln1"></p>
+            <p id="ln2"></p>
+            <p id="ln3"></p>
+            <p id="ln4" class="mt"></p>
+            <p id="ln5" class="mt accent"></p>
+          </div>
+          <button id="flip-btn" class="flip-btn hidden">Flip the Tables</button>
+        </div>
+
+        <!-- Back face: logo reveal -->
+        <div class="intro-card-back">
+          <div class="sigil-back">&#9674; &#9672; &#9674;</div>
+          <h1 class="title-back">The Ledger</h1>
+          <p class="sub-back">Read what they voted for.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ THE APP ═══ -->
+  <div id="app" class="hidden">
+
+    <header>
+      <div class="sigil">&#9674; &#9672; &#9674;</div>
+      <h1>The Ledger</h1>
+      <p class="subtitle">Read what they voted for.</p>
+    </header>
+
+    <!-- ═══ LANDING + INPUT (hidden together when navigating to curate/results) ═══ -->
+    <div id="landing-wrap">
+
+    <!-- ═══ WHAT IS THIS? ═══ -->
+    <div class="landing-section" id="whats-this">
+      <h2 class="landing-heading">What is this?</h2>
+      <p>The U.S. Congress passes laws that affect every American. The full text, actions, and vote records are technically public &mdash; published on <strong>Congress.gov</strong>, the Government Publishing Office, and the House and Senate clerks&rsquo; websites.</p>
+      <p>But &ldquo;technically public&rdquo; is not the same as accessible.</p>
+      <p class="landing-accent"><strong>The system buries the record in procedure.</strong></p>
+      <p>Bills move through subcommittees, markups, floor amendments, cloture votes, conference committees, and enrollment &mdash; each step documented in language designed for insiders. A bill that &ldquo;passed&rdquo; might have been gutted by amendment. A vote that looks bipartisan might be a procedural maneuver. A law that sounds harmless in its title might do something entirely different in Section 401(b)(2)(C).</p>
+      <p>And that&rsquo;s only the first wall.</p>
+      <p>Even when you find the record, the data is scattered across multiple government databases with different formats, different search interfaces, and no unified way to ask a plain question and get a sourced answer. Congress.gov shows bill metadata. GovInfo hosts the text. The House Clerk publishes roll call votes in one format. The Senate publishes them in another. Connecting a vote to a bill to a provision requires the kind of cross-referencing that staffers and lobbyists do for a living.</p>
+      <p>So the public gets crushed between two walls:</p>
+      <ol class="walls-list">
+        <li><strong>Procedural wall:</strong> &ldquo;You can find it &mdash; if you know where to look and what to call it.&rdquo;</li>
+        <li><strong>Complexity wall:</strong> &ldquo;Even if you find it, you won&rsquo;t understand what it means.&rdquo;</li>
+      </ol>
+      <p>That&rsquo;s not an accident. <strong>That&rsquo;s a governance model.</strong></p>
+      <p>The government can claim transparency because the records exist. The professional class can claim necessity because the records are indecipherable. And the public &mdash; voters, taxpayers, citizens &mdash; are told to trust the pundits, the parties, and the platforms to tell them what happened.</p>
+      <p class="landing-accent">This is old power.</p>
+      <p>In every era, the record existed. In every era, intermediaries insisted it must be mediated. The common people got slogans. The insiders got the ledger.</p>
+      <p>Until the tables were flipped.</p>
+      <p><strong>The Ledger</strong> flips them again &mdash; on purpose. You ask a question about federal legislation in plain English. AI converts it into Congress.gov search terms, searches the public record, and translates the results back into human language. You choose which bills matter. AI reads the record and writes a brief where every claim cites a source &mdash; real bill numbers, real vote records, real action dates you can click and verify.</p>
+      <p>Not a news feed. Not a partisan summary. A cross-examination of the public record they tried to keep behind procedure.</p>
+      <p class="landing-kicker">Because if the laws are passed in the public&rsquo;s name, then the public doesn&rsquo;t need permission to understand them.</p>
+      <p class="landing-kicker-sub">Not an answer box. A dialogue with evidence <em>that governs you</em>. <a href="#about-section" id="learn-more-link">The full story &rarr;</a></p>
+
+      <!-- Flow diagram -->
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="flow-icon">?</div>
+          <div class="flow-label">You ask</div>
+          <div class="flow-detail">plain English</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="flow-icon">&#9906;</div>
+          <div class="flow-label">AI searches</div>
+          <div class="flow-detail">Congress.gov &middot; bills &amp; votes</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="flow-icon">&#10003;</div>
+          <div class="flow-label">You choose</div>
+          <div class="flow-detail">which bills matter</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step">
+          <div class="flow-icon">&#9671;</div>
+          <div class="flow-label">AI reads</div>
+          <div class="flow-detail">the record</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step flow-step-accent">
+          <div class="flow-icon">&#9758;</div>
+          <div class="flow-label">Your brief</div>
+          <div class="flow-detail">every claim cited</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DOESN'T AI ALREADY DO THIS? ═══ -->
+    <div class="landing-section" id="ai-comparison">
+      <h2 class="landing-heading">Doesn&rsquo;t AI already do this?</h2>
+      <p class="compare-lead">When a bill passes that affects your family, your job, or your rights, you don&rsquo;t need vibes. You need the record. Here&rsquo;s what you&rsquo;re actually getting from the tools you trust:</p>
+      <div class="compare-grid">
+        <div class="compare-item">
+          <div class="compare-name">Google AI Overviews</div>
+          <div class="compare-desc">Summarizes the open web &mdash; news articles, opinion pieces, and partisan blogs weighted the same as the actual legislative text. No sources you can verify against the bill itself. No way to know what was excluded. <strong>Would you trust a confident paragraph about a law when it doesn&rsquo;t cite the law?</strong></div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-name">ChatGPT</div>
+          <div class="compare-desc">Cites bills &mdash; some real, some <strong>completely fabricated</strong>. Invented bill numbers, fake provisions, made-up vote tallies delivered with the same confident tone as the real ones. You cannot tell which is which. <strong>It hallucinates legislative records and presents them as fact.</strong></div>
+        </div>
+        <div class="compare-item compare-item-accent">
+          <div class="compare-name">The Ledger</div>
+          <div class="compare-desc">Searches the actual U.S. congressional record. Every bill is real &mdash; you see the title, sponsors, status, and actions. Every claim in your brief cites a <strong>real bill number and action</strong> you can click and verify on Congress.gov in 3 seconds. Every AI prompt is visible. You choose which bills matter. <strong>Nothing is hidden. Nothing is invented.</strong></div>
+        </div>
+      </div>
+      <p class="compare-kicker">They give you <em>answers</em>. This gives you <em>evidence</em>.</p>
+    </div>
+
+    <!-- ═══ QUICK START ═══ -->
+    <div id="input-view">
+      <div class="step-label">Quick start <span class="step-label-text">Three things. That&rsquo;s it.</span></div>
+
+      <div class="field">
+        <label for="q">1. What do you want to know about federal legislation?</label>
+        <textarea id="q" rows="2" placeholder="e.g., What bills have been introduced to regulate artificial intelligence in the 118th Congress?"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="ctx">
+          2. What decision does this serve?
+          <span class="info-tip" data-tip="Your context shapes the brief. 'Understanding how my representative voted' produces different emphasis than 'researching policy for a class paper.' The AI uses this to focus on what matters to you.">?</span>
+        </label>
+        <input type="text" id="ctx" placeholder="e.g., Understanding what Congress has actually done about AI before the next election">
+      </div>
+
+      <div class="field" id="key-field">
+        <label for="key">3. Your Anthropic API Key</label>
+        <p class="hint">Yours. Stays in your browser. Only sent to Anthropic&rsquo;s API &mdash; we don&rsquo;t have servers. <a href="https://console.anthropic.com/settings/keys" target="_blank">Get one here.</a></p>
+        <input type="password" id="key" placeholder="sk-ant-...">
+      </div>
+
+      <!-- Search settings -->
+      <details class="search-settings" id="search-settings">
+        <summary>Search settings</summary>
+        <div class="settings-grid">
+          <div class="setting-item">
+            <label for="s-depth">Results per query</label>
+            <select id="s-depth">
+              <option value="5" selected>5 (quick scan)</option>
+              <option value="10">10 (standard)</option>
+              <option value="25">25 (deep dive)</option>
+            </select>
+            <span class="setting-note">Applied to each of 3&ndash;4 AI-generated search strategies</span>
+          </div>
+          <div class="setting-item">
+            <label for="s-congress">Congress number</label>
+            <select id="s-congress">
+              <option value="119">119th (2025&ndash;2027)</option>
+              <option value="118" selected>118th (2023&ndash;2025)</option>
+              <option value="117">117th (2021&ndash;2023)</option>
+              <option value="116">116th (2019&ndash;2021)</option>
+              <option value="115">115th (2017&ndash;2019)</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+      <!-- Government API Key -->
+      <div class="field" id="gov-key-field">
+        <label for="gov-key">Your api.data.gov key</label>
+        <p class="hint">Required for searching Congress.gov. Free, instant signup. Stays in your browser. <a href="https://api.data.gov/signup/" target="_blank">Get one here.</a></p>
+        <input type="password" id="gov-key" placeholder="your-api-key-here">
+      </div>
+
+      <button id="search-btn" class="btn-primary">Search the Public Record</button>
+      <div id="search-status"></div>
+
+      <!-- Progress indicator (hidden until search starts) -->
+      <div id="search-progress" class="search-progress hidden">
+        <div class="progress-phase" id="prog-phase-1">
+          <div class="progress-marker"></div>
+          <div class="progress-text">
+            <div class="progress-label">Translating your question</div>
+            <div class="progress-detail">AI converts plain English into Congress.gov search terms</div>
+          </div>
+        </div>
+        <div class="progress-phase" id="prog-phase-2">
+          <div class="progress-marker"></div>
+          <div class="progress-text">
+            <div class="progress-label">Searching Congress.gov</div>
+            <div class="progress-detail">Querying bills across multiple search strategies</div>
+          </div>
+        </div>
+        <div class="progress-phase" id="prog-phase-3">
+          <div class="progress-marker"></div>
+          <div class="progress-text">
+            <div class="progress-label">Fetching bills</div>
+            <div class="progress-detail">Pulling titles, sponsors, actions, and summaries</div>
+          </div>
+        </div>
+        <div class="progress-phase" id="prog-phase-4">
+          <div class="progress-marker"></div>
+          <div class="progress-text">
+            <div class="progress-label">Translating into plain language</div>
+            <div class="progress-detail">Making the procedure readable</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual entry — for researchers who already have their corpus -->
+      <details class="manual-entry">
+        <summary>I already have bill numbers &mdash; skip the search</summary>
+        <div class="manual-explain">
+          <p><strong>For researchers and advocates:</strong> If you already have a set of bills you want synthesized, paste them below. The Ledger will fetch the bill data, translate it into plain language, and let you curate before synthesis &mdash; same workflow, your corpus.</p>
+          <p class="hint" style="margin-top:0.4rem;">Accepts bill numbers (e.g., HR 1234, S 5678), Congress.gov URLs, or bill type/number pairs. One per line. Your question and context (above) still shape the synthesis.</p>
+        </div>
+        <div class="field" style="margin-top: 0.75rem;">
+          <textarea id="links" rows="4" placeholder="HR 1234
+S 5678
+https://www.congress.gov/bill/118th-congress/house-bill/1234"></textarea>
+          <button id="manual-btn" class="btn-secondary" style="margin-top: 0.75rem;">Analyze These Bills</button>
+        </div>
+      </details>
+    </div>
+
+    </div><!-- /landing-wrap -->
+
+    <!-- ═══ STEP 2: CURATE ═══ -->
+    <div id="curate-view" class="hidden">
+      <div class="step-label">Step 2 <span class="step-label-text">Choose your bills</span></div>
+      <p class="step-desc">AI translated your question into the search terms the congressional record was built on &mdash; then translated the results back into plain language. Select the bills that matter to your question. Deselect the rest.</p>
+
+      <!-- How we found these -->
+      <details class="search-disclosure" id="search-disclosure">
+        <summary>How we found these bills</summary>
+        <div class="search-evolution">
+          <div class="search-evolution-step">
+            <div class="evolution-label">Your question</div>
+            <div class="evolution-content" id="evolution-question"></div>
+          </div>
+          <div class="evolution-arrow">&darr;</div>
+          <div class="search-evolution-step">
+            <div class="evolution-label">AI translated it into</div>
+            <div id="search-terms-display"></div>
+          </div>
+          <div class="evolution-arrow">&darr;</div>
+          <div class="search-evolution-step">
+            <div class="evolution-label">Results</div>
+            <div class="evolution-content" id="search-stats"></div>
+          </div>
+        </div>
+        <div class="prompt-peek">
+          <details>
+            <summary>See the full search prompt</summary>
+            <pre id="search-prompt-display" class="prompt-display"></pre>
+          </details>
+        </div>
+      </details>
+
+      <div class="curate-actions">
+        <button id="select-all-btn" class="btn-small">Select all</button>
+        <button id="select-none-btn" class="btn-small">Select none</button>
+        <span id="curate-count" class="curate-count"></span>
+      </div>
+
+      <div id="curate-list"></div>
+
+      <button id="synthesize-btn" class="btn-primary">Read and Synthesize</button>
+      <button id="back-to-search" class="btn-back">&#8592; Back to search</button>
+    </div>
+
+    <!-- ═══ STEP 3: PROCESSING ═══ -->
+    <div id="processing-view" class="hidden">
+      <div class="step-label">Step 3 <span class="step-label-text">Reading the record</span></div>
+      <div class="processing-sigil">&#9672;</div>
+      <div id="proc-status">Preparing synthesis...</div>
+      <div id="proc-bills"></div>
+
+      <details class="prompt-peek">
+        <summary>See the synthesis prompt</summary>
+        <pre id="synth-prompt-display" class="prompt-display"></pre>
+      </details>
+
+      <div id="stream-out"></div>
+    </div>
+
+    <!-- ═══ STEP 4: RESULTS ═══ -->
+    <div id="results-view" class="hidden">
+      <div class="step-label">Your Brief</div>
+      <div id="brief-out" class="brief-box"></div>
+
+      <details class="prompt-peek" style="margin-bottom: 1rem;">
+        <summary>See the prompt that generated this brief</summary>
+        <pre id="result-prompt-display" class="prompt-display"></pre>
+      </details>
+
+      <div class="provenance-section" id="provenance-section">
+        <details>
+          <summary>Provenance log</summary>
+          <div id="provenance-log" class="provenance-log"></div>
+        </details>
+      </div>
+
+      <div class="export-section">
+        <div class="export-heading">Take it with you</div>
+        <div class="export-row">
+          <div class="export-option">
+            <button class="export-btn primary" id="dl-docx">Download Brief (.docx)</button>
+            <p class="export-hint">Your brief as a Word document. Share it with your representative, print it, or keep it for reference. Every claim cites its source.</p>
+          </div>
+          <div class="export-option">
+            <button class="export-btn" id="dl-brief">Download Brief (.md)</button>
+            <p class="export-hint">Plain text with formatting. Opens in any text editor. Good for pasting into notes or emails.</p>
+          </div>
+          <div class="export-option">
+            <button class="export-btn" id="dl-tablet">Download Tablet (.json)</button>
+            <p class="export-hint">The full session &mdash; your question, every bill, search terms, prompts, and the brief &mdash; in a structured data file. For archiving or re-analysis.</p>
+          </div>
+        </div>
+      </div>
+      <button id="again-btn" class="btn-back">&#8592; New question</button>
+    </div>
+
+    <!-- ═══ ABOUT & DOCUMENTATION ═══ -->
+    <div class="about-section" id="about-section">
+      <div class="about-toggle" id="about-toggle">
+        <span>About &amp; Documentation</span>
+        <span class="toggle-arrow">&#9662;</span>
+      </div>
+      <div class="about-body hidden" id="about-body">
+
+        <!-- Chapter 1: How The Machine Works -->
+        <div class="doc-chapter reveal">
+          <h2>How The Machine Works</h2>
+          <p>Here is the lifecycle of a federal law.</p>
+          <p>A member of Congress introduces a bill. It is assigned a number, referred to a committee, and published on <strong>Congress.gov</strong> &mdash; the government&rsquo;s official legislative database. The committee may hold hearings, mark up the bill, or let it die quietly. If it advances, it goes to the floor for debate and a vote. If it passes one chamber, it goes to the other. If both chambers pass different versions, a conference committee reconciles them. The final version goes to the President.</p>
+          <p>That sounds straightforward. It is not.</p>
+
+          <h3>The Procedural Labyrinth</h3>
+          <p>The real action happens in the procedure. A bill can be &ldquo;passed&rdquo; by being attached as an amendment to an unrelated must-pass spending bill. A vote can be &ldquo;bipartisan&rdquo; because it was a procedural motion to advance debate, not a vote on the substance. A provision can be &ldquo;in the law&rdquo; because it was inserted during conference committee at 2am, after both chambers had voted.</p>
+          <p>The data is scattered across multiple systems:</p>
+          <ul>
+            <li><strong>Congress.gov</strong> &mdash; bill metadata, actions, summaries, and status</li>
+            <li><strong>GovInfo (GPO)</strong> &mdash; the actual text of bills, reports, and the Congressional Record</li>
+            <li><strong>House Clerk</strong> &mdash; House roll call vote records</li>
+            <li><strong>Senate.gov</strong> &mdash; Senate roll call vote records</li>
+          </ul>
+          <p>Each system has its own format, its own search interface, and its own conventions. Connecting a vote to a bill to a provision requires the kind of cross-referencing that congressional staffers, lobbyists, and legislative counsel do professionally.</p>
+          <p>Congress.gov offers the metadata for free. That is the crack in the wall. The Ledger drives a truck through it.</p>
+        </div>
+
+        <!-- Chapter 2: Why Not Just Ask ChatGPT? -->
+        <div class="doc-chapter reveal">
+          <h2>Why Not Just Ask ChatGPT?</h2>
+          <p>These tools treat you as a <strong>consumer of answers</strong>. You ask. They deliver. You accept. Sound familiar?</p>
+          <p>It is the same gatekeeping pattern wearing a friendlier mask. The pundits said: trust us, we interpret the news. The algorithms say: trust us, we summarize the record. In both cases, the evidence is not in your hands. You are still on the outside of the glass, trusting an intermediary to get it right.</p>
+          <p>The Ledger takes a different position: you should be in <strong>dialogue with the legislative record itself</strong>. Not receiving a verdict. Not consuming a summary. Sitting at the table, choosing which bills matter, reading what they actually did, and walking away with every claim traced to its source.</p>
+          <p>The difference between an answer box and a dialogue is the difference between being told what happened and being equipped to read the record yourself.</p>
+        </div>
+
+        <!-- Chapter 3: The Dialogue -->
+        <div class="doc-chapter reveal">
+          <h2>The Dialogue</h2>
+          <p>Here is how The Ledger works, step by step.</p>
+
+          <h3>Step 1: You ask a question</h3>
+          <p>Type your question in plain English. Add your decision context &mdash; the reason you are asking. &ldquo;What has Congress done about housing?&rdquo; is different when the context is &ldquo;deciding whether to call my representative&rdquo; versus &ldquo;writing a policy brief for class.&rdquo; The context shapes which evidence matters most.</p>
+
+          <h3>Step 2: AI translates your question into Congress.gov&rsquo;s language</h3>
+          <p>Your question is sent to <strong>Claude</strong>, Anthropic&rsquo;s AI. It does not just pull keywords. It generates <strong>multiple search strategies</strong> using real legislative terminology &mdash; bill types, policy areas, subject terms, sponsor names &mdash; the same language a legislative aide would use. These strategies range from broad (casting a wide net across policy areas) to specific (targeting exact bill types and provisions).</p>
+          <p>You can see every search term it generated, and why. Nothing is hidden.</p>
+
+          <h3>Step 3: Bills come back in plain language</h3>
+          <p>The search terms query the Congress.gov API &mdash; the same data used by the Congressional Research Service and legislative tracking services. Bills return with their titles, sponsors, status, latest actions, and summaries. Then AI translates each bill&rsquo;s procedural details into plain language &mdash; not dumbed down, but made readable.</p>
+          <p>You see both versions: the plain-language translation and the original official title. <strong>You decide which bills to include.</strong> This is your curation step. The AI does not decide what is relevant. You do.</p>
+
+          <h3>Step 4: AI reads and writes your brief</h3>
+          <p>The bills you selected are sent to Claude with strict instructions: separate what the record shows from what can be inferred. Cite every claim with a bill number and action date. Surface contradictions between different bills or versions &mdash; do not hide disagreement. State confidence honestly. Name what is unknown. Flag any claim that cannot be traced to a provided record as <em>[UNWITNESSED]</em>.</p>
+          <p>The synthesis streams in real time. You watch it being written. When it is done, you have a brief you can download as a Word document &mdash; with every claim linked to its source on Congress.gov.</p>
+          <p>You came in with a question. You leave with receipts.</p>
+        </div>
+
+        <!-- Chapter 4: The Prompts -->
+        <div class="doc-chapter reveal">
+          <h2>The Prompts</h2>
+          <p>Every AI interaction in The Ledger uses a carefully designed prompt. Most AI tools hide their prompts. We show you ours in full, because transparency is not optional when the legislative record is at stake.</p>
+
+          <h3>Search Query Generation</h3>
+          <p>When you type your question and press search, this prompt converts your plain English into optimized Congress.gov API queries with real legislative terminology and search parameters.</p>
+          <pre id="doc-prompt-search" class="prompt-display"></pre>
+
+          <h3>Plain-Language Translation</h3>
+          <p>After finding bills, this prompt translates each bill&rsquo;s title, status, and actions into language anyone can understand &mdash; without losing the substance.</p>
+          <pre id="doc-prompt-summary" class="prompt-display"></pre>
+
+          <h3>Synthesis</h3>
+          <p>This is the core prompt. It governs how the AI reads the bills and writes your brief. Every rule serves a purpose: separating fact from inference, enforcing citations, surfacing disagreement, preventing hallucination.</p>
+          <pre id="doc-prompt-synth" class="prompt-display"></pre>
+        </div>
+
+        <!-- Chapter 5: Honest Limits -->
+        <div class="doc-chapter reveal">
+          <h2>Honest Limits</h2>
+          <p>This tool has real limitations. Knowing them makes you a better user.</p>
+          <ul>
+            <li><strong>Summaries and metadata only.</strong> The Ledger reads bill summaries, titles, actions, and status &mdash; not the full legislative text. Full bill text can run hundreds of pages. This means specific provisions, section-level language, and amendment details may be missed. If a bill matters to your decision, read the full text on Congress.gov.</li>
+            <li><strong>AI can err.</strong> Despite strict instructions, Claude may occasionally misinterpret a bill&rsquo;s status or make an unsupported inference. Every claim includes a bill citation &mdash; click it and read the record yourself on Congress.gov. The receipts exist so you can verify.</li>
+            <li><strong>Not legal advice.</strong> This tool helps you understand what legislation exists and what Congress has done. It does not replace an attorney or a legislative analyst. It gives you better questions to ask your representative, not answers to follow blindly.</li>
+            <li><strong>Coverage boundaries.</strong> The Congress.gov API has limits. Very new bills may not be indexed yet. Certain historical records may be incomplete. The search stats tell you exactly how many bills were found and how.</li>
+            <li><strong>Vote linkage.</strong> Connecting roll call votes to specific bills is complex. The Ledger uses the linkages available through Congress.gov and the House/Senate clerk sites, but some votes &mdash; especially procedural ones &mdash; may not be directly linked to the bill they affected.</li>
+          </ul>
+        </div>
+
+        <!-- Chapter 6: Technical Details -->
+        <div class="doc-chapter reveal">
+          <h2>Technical Details</h2>
+          <h3>Data sources</h3>
+          <p><strong>Congress.gov API (api.data.gov):</strong> All bill metadata, actions, summaries, and status are fetched from the Library of Congress&rsquo;s public API. This is the same data used by the Congressional Research Service, legislative tracking services, and news organizations. Free, public, API key required (also free).</p>
+          <p><strong>House Clerk &amp; Senate.gov:</strong> Roll call vote records are fetched from the Office of the Clerk of the U.S. House of Representatives and the U.S. Senate website. These are the official sources for how each member voted.</p>
+          <h3>AI model</h3>
+          <p><strong>Claude by Anthropic:</strong> All AI interactions use Claude, Anthropic&rsquo;s most capable model. You provide your own API key, which means your data is sent directly from your browser to Anthropic&rsquo;s servers. Nothing passes through our servers because we do not have servers. This is a static website.</p>
+          <h3>Privacy</h3>
+          <p>Your API keys are stored in your browser&rsquo;s localStorage. They are never sent anywhere except to their respective APIs (Anthropic for Claude, api.data.gov for Congress.gov). Your questions, bills, and briefs exist only in your browser. When you close the tab, they are gone unless you downloaded them. No tracking. No analytics. No database.</p>
+        </div>
+
+        <!-- Chapter 7: The Lineage -->
+        <div class="doc-chapter reveal">
+          <h2>The Lineage</h2>
+          <p>The Ledger inherits from a long tradition of putting knowledge back in common hands.</p>
+          <p>The United States was founded on the principle that the governed must consent &mdash; and consent requires understanding. The Constitution mandates that Congress publish a journal of its proceedings. The Government Printing Office was established in 1861 to make federal documents available to the public. The Congressional Record has been published daily since 1873.</p>
+          <p>But availability is not the same as accessibility. The record was published in print, then in databases, then on websites &mdash; and at each step, the language remained engineered for insiders. The form changed. The gate did not.</p>
+          <p>When the Freedom of Information Act was passed in 1966, government agencies resisted it for decades. When THOMAS (the precursor to Congress.gov) launched in 1995, it made legislative text searchable for the first time &mdash; but only if you knew the search syntax. When data.gov launched in 2009, it made government data machine-readable &mdash; but only if you could write the code.</p>
+          <p>The pattern is always the same. The record exists. The format ensures most people cannot use it. Translators refuse the premise. Eventually, the public record returns to the public.</p>
+          <p>This tool is one small table flip in that tradition. It does not replace reading. It does not replace thinking. It does not replace civic engagement. It is a translator that sits at the table with you, reads the public record aloud, and makes sure every claim has a receipt.</p>
+          <p class="lineage-end">The tables have turned. Open the ledger.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <details id="settings">
+      <summary>Settings</summary>
+      <div class="settings-inner">
+        <div class="field">
+          <label for="s-key">API Key</label>
+          <input type="password" id="s-key">
+        </div>
+        <div class="field">
+          <label for="s-gov-key">Government API Key</label>
+          <input type="password" id="s-gov-key">
+        </div>
+      </div>
+    </details>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer id="site-footer">
+      <div class="footer-brand">
+        <div class="footer-sigil">&#9674; &#9672; &#9674;</div>
+        <div class="footer-title">The Word Against The Flood</div>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:JEThomasPhD@gmail.com">JEThomasPhD@gmail.com</a>
+      </div>
+      <div class="footer-sig">
+        Made using <a href="https://the-companion-dossier.pages.dev/Latent_Dialogic_Space/" target="_blank" rel="noopener">Latent Dialogic Space</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="js/shoreline.js"></script>
+  <script src="js/synthesis.js"></script>
+  <script src="js/app.js"></script>
+</body>
 </html>
