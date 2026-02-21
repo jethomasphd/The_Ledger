@@ -1,0 +1,2397 @@
+/* ===================================================================
+   The Ledger — The public record, returned to the public.
+   "A table at night with one lamp."
+
+   Visual DNA modeled on the Turned Tables / Companion Suite:
+     Palette:        Void / Gold-Amber / Bone
+     Voice/Headers:  Cormorant Garamond (weight 300-500)
+     Body/Narrative: Crimson Pro
+     Technical:      IBM Plex Mono
+     Fallback:       system-ui
+   =================================================================== */
+
+
+/* ── I. Design Tokens ── */
+
+:root {
+  /* Backgrounds */
+  --bg:             #0a0a0a;
+  --bg-surface:     #111111;
+  --bg-card:        #1a1a1a;
+
+  /* Text */
+  --text:           #e8e0d0;
+  --text-muted:     #999999;
+  --text-dim:       #666666;
+
+  /* Accent */
+  --accent:         #8B6914;
+  --accent-soft:    #C4A035;
+
+  /* Borders */
+  --border:         #1a1a1a;
+  --border-mid:     #2a2a2a;
+  --border-bright:  #3a3a3a;
+
+  /* Semantic colors */
+  --green:          #4a7a4a;
+  --red:            #7a4a4a;
+  --amber:          #d4a44c;
+
+  /* Font stacks */
+  --serif:          'Cormorant Garamond', Georgia, serif;
+  --body:           'Crimson Pro', Georgia, serif;
+  --mono:           'IBM Plex Mono', monospace;
+  --sans:           system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+
+/* ── II. Reset & Foundations ── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.8;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+a {
+  color: var(--accent-soft);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: var(--text);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+
+/* ── III. Utility Classes ── */
+
+.hidden {
+  display: none !important;
+}
+
+.mt {
+  margin-top: 1.8rem;
+}
+
+
+/* ── IV. Animations ── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 0 0 20px rgba(139, 105, 20, 0.3); }
+  50%      { text-shadow: 0 0 40px rgba(139, 105, 20, 0.6), 0 0 80px rgba(139, 105, 20, 0.2); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.03; }
+  50%      { opacity: 0.06; }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(139, 105, 20, 0.4); }
+  70%  { box-shadow: 0 0 0 8px rgba(139, 105, 20, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(139, 105, 20, 0); }
+}
+
+
+/* ── V. Scroll Reveal System ── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+
+/* ===================================================================
+   VI. CINEMATIC INTRO
+   =================================================================== */
+
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(139, 105, 20, 0.025) 0%,
+    transparent 50%
+  );
+  animation: breathe 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+#skip-intro {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 101;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}
+#skip-intro:hover {
+  color: var(--text-muted);
+}
+
+/* ── Flip Card Container ── */
+
+.intro-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1500px;
+}
+
+.intro-card {
+  width: 100%;
+  max-width: 700px;
+  min-height: 320px;
+  padding: 2rem;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.intro-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.intro-card-front,
+.intro-card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.intro-card-front {
+  text-align: left;
+}
+
+.intro-card-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: rotateY(180deg);
+  text-align: center;
+  padding: 2rem;
+}
+
+/* ── Typewriter Lines ── */
+
+.intro-lines p {
+  min-height: 1.5em;
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3.5vw, 1.9rem);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.intro-lines .mt {
+  margin-top: 1.8rem;
+}
+
+.intro-lines .accent,
+#ln5.accent {
+  color: var(--accent-soft);
+  font-style: italic;
+  font-size: clamp(1.3rem, 4vw, 2.2rem);
+}
+
+.typing::after {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 1.1em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: 4px;
+  animation: blink 0.8s step-end infinite;
+}
+
+/* ── Flip Button ── */
+
+.flip-btn {
+  display: block;
+  margin-top: 2.5rem;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent-soft);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  padding: 1rem 3.5rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  transition: all 0.4s ease;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}
+.flip-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 60px rgba(139, 105, 20, 0.25);
+}
+
+/* ── Back Face (Logo Reveal) ── */
+
+.sigil-back {
+  font-size: 2.5rem;
+  color: var(--accent-soft);
+  letter-spacing: 0.5em;
+  animation: glow 4s ease-in-out infinite;
+}
+
+.title-back {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.sub-back {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+
+/* ===================================================================
+   VII. APP SHELL
+   =================================================================== */
+
+#app {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  padding-bottom: 2rem;
+  animation: fadeIn 0.8s ease;
+}
+
+
+/* ===================================================================
+   VIII. HEADER
+   =================================================================== */
+
+header {
+  text-align: center;
+  padding: 3.5rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+header .sigil {
+  font-size: 1.4rem;
+  color: var(--accent-soft);
+  letter-spacing: 0.5em;
+  margin-bottom: 0.75rem;
+  animation: glow 4s ease-in-out infinite;
+}
+
+header h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+
+header .subtitle {
+  font-family: var(--serif);
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+
+/* ===================================================================
+   IX. LANDING SECTIONS
+   =================================================================== */
+
+.landing-section {
+  max-width: 680px;
+  margin: 0 auto 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-heading {
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 300;
+  color: var(--accent-soft);
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.landing-section p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: rgba(232, 224, 208, 0.7);
+  margin-bottom: 0.75rem;
+  max-width: 65ch;
+}
+
+.landing-section strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.landing-section em {
+  color: var(--accent-soft);
+  font-style: italic;
+}
+
+.landing-section a {
+  color: var(--accent-soft);
+  border-bottom: 1px solid var(--accent);
+  transition: border-color 0.3s ease;
+}
+.landing-section a:hover {
+  border-color: var(--accent-soft);
+}
+
+.landing-accent {
+  color: var(--accent-soft) !important;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.landing-kicker {
+  margin-top: 1rem;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--accent-soft) !important;
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.landing-kicker-sub {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: var(--text) !important;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+
+/* ── Walls List ── */
+
+.walls-list {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.walls-list li {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 0.25rem;
+}
+
+
+/* ── Flow Diagram ── */
+
+.flow-diagram {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin: 2rem 0 0.5rem;
+  padding: 1.5rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 0.25rem;
+}
+
+.flow-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-bright);
+  color: rgba(232, 224, 208, 0.7);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.flow-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.flow-detail {
+  font-family: var(--body);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.flow-step-accent .flow-icon {
+  color: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.flow-step-accent .flow-label {
+  color: var(--accent-soft);
+}
+
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  padding-top: 0.5rem;
+  color: var(--accent);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+
+/* ── Compare Grid ── */
+
+.compare-lead {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: rgba(232, 224, 208, 0.7);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  max-width: 65ch;
+}
+
+.compare-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.compare-item {
+  padding: 1rem 1.25rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-bright);
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+
+.compare-item-accent {
+  border-left-color: var(--accent-soft);
+  background: rgba(139, 105, 20, 0.03);
+}
+
+.compare-name {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-bottom: 0.35rem;
+}
+
+.compare-item-accent .compare-name {
+  color: var(--accent-soft);
+}
+
+.compare-desc {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(232, 224, 208, 0.7);
+}
+
+.compare-desc strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.compare-kicker {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--text);
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+  padding-top: 0.25rem;
+}
+
+.compare-kicker em {
+  color: var(--accent-soft);
+}
+
+
+/* ===================================================================
+   X. STEP LABELS
+   =================================================================== */
+
+.step-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.step-label-text {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.step-desc {
+  font-size: 0.95rem;
+  color: rgba(232, 224, 208, 0.7);
+  margin-bottom: 1.25rem;
+  max-width: 62ch;
+  line-height: 1.75;
+}
+
+
+/* ===================================================================
+   XI. FORM FIELDS
+   =================================================================== */
+
+.field {
+  margin-bottom: 1.25rem;
+}
+
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.35rem;
+}
+
+.hint {
+  font-family: var(--body);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+  line-height: 1.6;
+}
+
+.hint a {
+  color: var(--accent-soft);
+  border-bottom: 1px solid var(--accent);
+  transition: border-color 0.3s ease;
+}
+.hint a:hover {
+  border-color: var(--accent-soft);
+}
+
+textarea,
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  padding: 0.65rem 0.8rem;
+  line-height: 1.6;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea {
+  resize: vertical;
+  font-family: var(--body);
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: var(--text-dim);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-soft);
+  box-shadow: 0 0 0 1px rgba(139, 105, 20, 0.15);
+}
+
+select {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+#links {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.8;
+}
+
+
+/* ── Info Tips ── */
+
+.info-tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: help;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  border: 1px solid var(--border-mid);
+  border-radius: 50%;
+  width: 1.2em;
+  height: 1.2em;
+  margin-left: 0.35rem;
+  vertical-align: middle;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.info-tip:hover {
+  border-color: var(--accent-soft);
+  color: var(--accent-soft);
+}
+
+.info-tip::after {
+  content: attr(data-tip);
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #050505;
+  border: 1px solid var(--border);
+  color: rgba(232, 224, 208, 0.7);
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 0.6rem 0.85rem;
+  width: 300px;
+  line-height: 1.55;
+  z-index: 10;
+  white-space: normal;
+}
+
+.info-tip:hover::after {
+  display: block;
+}
+
+
+/* ===================================================================
+   XII. BUTTONS
+   =================================================================== */
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 1rem;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent-soft);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  transition: all 0.4s ease;
+  margin-top: 1.5rem;
+}
+
+.btn-primary:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 60px rgba(139, 105, 20, 0.25);
+}
+
+.btn-primary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btn-primary:disabled:hover {
+  background: transparent;
+  color: var(--accent-soft);
+  box-shadow: none;
+}
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.75rem;
+  border: 1px solid var(--border-bright);
+  background: transparent;
+  color: rgba(232, 224, 208, 0.7);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-soft);
+  color: var(--accent-soft);
+}
+
+.btn-small {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--border-mid);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+}
+
+.btn-small:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-back {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 0.75rem;
+  letter-spacing: 0.1em;
+  transition: color 0.2s ease;
+}
+
+.btn-back:hover {
+  color: var(--text-muted);
+}
+
+
+/* ===================================================================
+   XIII. SEARCH SETTINGS
+   =================================================================== */
+
+.search-settings {
+  margin-bottom: 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.search-settings summary {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  padding: 0.6rem 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.search-settings summary:hover {
+  color: var(--text-muted);
+}
+
+.settings-grid {
+  padding: 0.5rem 0.85rem 0.85rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.setting-item label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.2rem;
+  display: block;
+}
+
+.setting-item select {
+  width: auto;
+  min-width: 160px;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.setting-note {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+}
+
+
+/* ===================================================================
+   XIV. SEARCH PROGRESS
+   =================================================================== */
+
+.search-progress {
+  margin-top: 1.25rem;
+  padding: 1.25rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.progress-phase {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  opacity: 0.3;
+  transition: opacity 0.4s ease;
+}
+
+.progress-phase.active {
+  opacity: 1;
+}
+
+.progress-phase.done {
+  opacity: 0.6;
+}
+
+.progress-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--text-dim);
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.progress-phase.active .progress-marker {
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+  box-shadow: 0 0 6px rgba(139, 105, 20, 0.4);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.progress-phase.done .progress-marker {
+  border-color: var(--green);
+  background: var(--green);
+  animation: none;
+}
+
+.progress-phase.done .progress-marker::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.5rem;
+  color: #fff;
+  line-height: 1;
+}
+
+.progress-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.progress-phase.active .progress-label {
+  color: var(--accent-soft);
+}
+
+.progress-detail {
+  font-family: var(--body);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  margin-top: 0.1rem;
+}
+
+.progress-text {
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* ===================================================================
+   XV. SEARCH DISCLOSURE & EVOLUTION
+   =================================================================== */
+
+.search-disclosure {
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.search-disclosure summary {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  padding: 0.6rem 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.search-disclosure summary:hover {
+  color: var(--text-muted);
+}
+
+.search-evolution {
+  padding: 0.75rem 0.85rem;
+}
+
+.search-evolution-step {
+  padding: 0.35rem 0;
+}
+
+.evolution-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.25rem;
+}
+
+.evolution-content {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: rgba(232, 224, 208, 0.7);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.evolution-arrow {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  padding: 0.15rem 0 0.15rem 0.5rem;
+}
+
+.search-stats {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  color: rgba(232, 224, 208, 0.7);
+  padding: 0;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+#search-terms-display {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: rgba(232, 224, 208, 0.7);
+  line-height: 1.6;
+}
+
+#search-terms-display .search-term-label {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+#search-status {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: rgba(232, 224, 208, 0.7);
+  min-height: 1.2em;
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+#search-status.error {
+  color: var(--red);
+}
+
+
+/* ===================================================================
+   XVI. PROMPT PEEK
+   =================================================================== */
+
+.prompt-peek {
+  margin: 0.5rem 0;
+}
+
+.prompt-peek summary {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 0.4rem 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.prompt-peek summary:hover {
+  color: var(--text-muted);
+}
+
+.prompt-display {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  background: #050505;
+  border: 1px solid var(--border);
+  padding: 0.85rem 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0.4rem 0.85rem 0.85rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+
+/* ===================================================================
+   XVII. CURATE VIEW
+   =================================================================== */
+
+.curate-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.curate-count {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-left: auto;
+  letter-spacing: 0.05em;
+}
+
+.curate-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  margin-bottom: 0.6rem;
+  transition: border-color 0.25s ease, background 0.25s ease;
+  position: relative;
+}
+
+.curate-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(139, 105, 20, 0.03) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.curate-card:hover::before {
+  opacity: 1;
+}
+
+.curate-card:hover {
+  border-color: var(--border-mid);
+}
+
+.curate-card.selected {
+  border-color: rgba(139, 105, 20, 0.3);
+  border-left: 3px solid var(--accent-soft);
+  background: rgba(139, 105, 20, 0.02);
+}
+
+.curate-card-top {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.curate-check {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-bright);
+  background: transparent;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--accent-soft);
+  transition: all 0.2s ease;
+}
+
+.curate-card.selected .curate-check {
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+  color: var(--bg);
+}
+
+.curate-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.curate-plain-title {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.4;
+  margin-bottom: 0.15rem;
+}
+
+.curate-plain-summary {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0 0.4rem 0.75rem;
+  border-left: 2px solid var(--accent);
+  background: rgba(139, 105, 20, 0.02);
+}
+
+.curate-technical-title {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.curate-meta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 0.2rem;
+  letter-spacing: 0.05em;
+}
+
+.curate-pmid,
+.curate-bill-id {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--accent);
+  margin-top: 0.3rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── Expandable abstract ── */
+
+.curate-expand {
+  display: none;
+  padding: 0 1.25rem 1rem;
+  padding-left: calc(18px + 2rem);
+  position: relative;
+  z-index: 1;
+}
+
+.curate-card.expanded .curate-expand {
+  display: block;
+}
+
+.curate-abstract-full {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  color: rgba(232, 224, 208, 0.7);
+  line-height: 1.7;
+  padding: 0.75rem;
+  background: #050505;
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+}
+
+.curate-expand-btn {
+  display: block;
+  background: none;
+  border: none;
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 0.4rem 1.25rem 0.4rem calc(18px + 2rem);
+  transition: color 0.2s ease;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+}
+
+.curate-expand-btn:hover {
+  color: var(--accent-soft);
+}
+
+
+/* ===================================================================
+   XVIII. PROCESSING VIEW
+   =================================================================== */
+
+#processing-view {
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.processing-sigil {
+  font-size: 2.5rem;
+  color: var(--accent-soft);
+  animation: pulse 2s ease-in-out infinite, glow 4s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+#proc-status {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: rgba(232, 224, 208, 0.7);
+  margin: 1rem 0;
+}
+
+#proc-papers {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.paper-found {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 0.3rem;
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.paper-found::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+}
+
+#stream-out {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: rgba(232, 224, 208, 0.7);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #050505;
+  border: 1px solid var(--border);
+  display: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+#stream-out.visible {
+  display: block;
+}
+
+
+/* ===================================================================
+   XIX. RESULTS / BRIEF
+   =================================================================== */
+
+#results-view {
+  animation: fadeIn 0.6s ease;
+}
+
+.brief-box {
+  background: #050505;
+  border: 1px solid var(--border);
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--body);
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.brief-box h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  font-weight: 300;
+  color: var(--accent-soft);
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.brief-box h2 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.brief-box h3 {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.brief-box p {
+  margin-bottom: 0.75rem;
+  max-width: 65ch;
+  color: rgba(232, 224, 208, 0.7);
+}
+
+.brief-box strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.brief-box em {
+  color: var(--accent-soft);
+  font-style: italic;
+}
+
+.brief-box hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.brief-box ul,
+.brief-box ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.brief-box li {
+  margin-bottom: 0.5rem;
+  color: rgba(232, 224, 208, 0.7);
+}
+
+.brief-box a {
+  color: var(--accent-soft);
+  border-bottom: 1px solid var(--accent);
+  transition: border-color 0.3s ease;
+}
+
+.brief-box a:hover {
+  border-color: var(--accent-soft);
+}
+
+.brief-box .pmid,
+.brief-box .receipt {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--accent-soft);
+  background: rgba(139, 105, 20, 0.08);
+  padding: 1px 5px;
+}
+
+.brief-box .tag-unwitnessed {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: #c44;
+  background: rgba(122, 74, 74, 0.15);
+  padding: 1px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.brief-box .tag-contested {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--amber);
+  background: rgba(212, 164, 76, 0.15);
+  padding: 1px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+/* ===================================================================
+   XX. PROVENANCE
+   =================================================================== */
+
+.provenance-section {
+  margin-bottom: 1.5rem;
+}
+
+.provenance-section summary {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.provenance-section summary:hover {
+  color: var(--text-muted);
+}
+
+.provenance-log {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+  padding: 0.75rem;
+  background: #050505;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+
+.prov-entry {
+  margin-bottom: 0.25rem;
+}
+
+.prov-time {
+  color: var(--text-dim);
+}
+
+.prov-action {
+  color: rgba(232, 224, 208, 0.7);
+}
+
+
+/* ===================================================================
+   XXI. EXPORT
+   =================================================================== */
+
+.export-section {
+  margin-bottom: 1.5rem;
+}
+
+.export-heading {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.export-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.export-option {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.export-hint {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-top: 0.4rem;
+  padding: 0 0.25rem;
+}
+
+.export-btn {
+  flex: 1;
+  min-width: 140px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent-soft);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.export-btn:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: 0 0 40px rgba(139, 105, 20, 0.15);
+}
+
+.export-btn.primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.export-btn.primary:hover {
+  background: var(--accent-soft);
+  box-shadow: 0 0 60px rgba(196, 160, 53, 0.25);
+}
+
+
+/* ===================================================================
+   XXII. ABOUT SECTION & DOCUMENTATION
+   =================================================================== */
+
+.about-section {
+  margin-top: 3rem;
+  border-top: 1px solid var(--border);
+}
+
+.about-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.about-toggle:hover {
+  opacity: 0.8;
+}
+
+.about-toggle span:first-child {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+.about-toggle:hover span:first-child {
+  color: var(--text-muted);
+}
+
+.toggle-arrow {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.about-section.open .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+.about-body {
+  padding-bottom: 2rem;
+}
+
+/* ── Documentation Chapters ── */
+
+.doc-chapter {
+  margin-bottom: 2.5rem;
+  padding-top: 1rem;
+}
+
+.doc-chapter.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.doc-chapter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.doc-chapter h2 {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: var(--accent-soft);
+  margin-bottom: 1rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.doc-chapter h3 {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.doc-chapter p {
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  max-width: 65ch;
+  line-height: 1.8;
+  color: rgba(232, 224, 208, 0.7);
+}
+
+.doc-chapter strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.doc-chapter em {
+  color: var(--accent-soft);
+  font-style: italic;
+}
+
+.doc-chapter ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.doc-chapter li {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+  color: rgba(232, 224, 208, 0.7);
+}
+
+.lineage-end {
+  color: var(--accent-soft);
+  font-family: var(--serif);
+  font-style: italic;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+
+/* ===================================================================
+   XXIII. SETTINGS
+   =================================================================== */
+
+#settings {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+#settings summary {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+#settings summary:hover {
+  color: var(--text-muted);
+}
+
+.settings-inner {
+  padding-top: 0.75rem;
+}
+
+.settings-inner .field {
+  margin-bottom: 1rem;
+}
+
+
+/* ===================================================================
+   XXIV. MANUAL ENTRY
+   =================================================================== */
+
+.manual-entry {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.manual-entry summary {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.manual-entry summary:hover {
+  color: var(--text-muted);
+}
+
+.manual-explain {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
+}
+
+.manual-explain p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(232, 224, 208, 0.7);
+  margin-bottom: 0;
+}
+
+.manual-explain strong {
+  color: var(--accent-soft);
+}
+
+
+/* ===================================================================
+   XXV. FOOTER
+   =================================================================== */
+
+footer,
+#site-footer {
+  margin-top: 3rem;
+  padding: 2.5rem 0 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-brand {
+  margin-bottom: 1rem;
+}
+
+.footer-sigil {
+  font-size: 1rem;
+  color: var(--accent-soft);
+  letter-spacing: 0.4em;
+  margin-bottom: 0.5rem;
+  animation: glow 4s ease-in-out infinite;
+}
+
+.footer-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: rgba(232, 224, 208, 0.7);
+  letter-spacing: 0.06em;
+}
+
+.footer-links {
+  margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--accent);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--accent-soft);
+}
+
+.footer-sig {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.footer-sig a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(139, 105, 20, 0.3);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-sig a:hover {
+  color: var(--accent-soft);
+  border-bottom-color: var(--accent-soft);
+}
+
+
+/* ===================================================================
+   XXVI. RESPONSIVE — 700px breakpoint
+   =================================================================== */
+
+@media (max-width: 700px) {
+  #app {
+    padding: 1rem;
+  }
+
+  header {
+    padding: 2rem 0 1.5rem;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+  }
+
+  .intro-card {
+    padding: 1.5rem;
+  }
+
+  .intro-lines p {
+    font-size: 1.1rem;
+  }
+
+  .flip-btn {
+    padding: 0.85rem 2rem;
+    font-size: 0.75rem;
+  }
+
+  .brief-box {
+    padding: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .brief-box h1 {
+    font-size: 1.2rem;
+  }
+
+  .export-row {
+    flex-direction: column;
+  }
+
+  .curate-card-top {
+    padding: 0.75rem;
+  }
+
+  .curate-expand {
+    padding-left: calc(18px + 1.75rem);
+  }
+
+  .curate-expand-btn {
+    padding-left: calc(18px + 1.75rem);
+  }
+
+  .info-tip::after {
+    left: auto;
+    right: -10px;
+    transform: none;
+    width: 250px;
+  }
+
+  .landing-section {
+    max-width: 100%;
+  }
+
+  .landing-heading {
+    font-size: 1.2rem;
+  }
+
+  /* Flow diagram: stack vertically */
+  .flow-diagram {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 1.25rem;
+  }
+
+  .flow-step {
+    flex-direction: row;
+    gap: 0.75rem;
+    text-align: left;
+    width: 100%;
+    padding: 0.4rem 0;
+  }
+
+  .flow-step .flow-icon {
+    flex-shrink: 0;
+  }
+
+  .flow-step .flow-label {
+    text-align: left;
+  }
+
+  .flow-step .flow-detail {
+    text-align: left;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+    padding: 0.15rem 0;
+    font-size: 0.8rem;
+  }
+
+  .compare-grid {
+    gap: 0.5rem;
+  }
+
+  .compare-item {
+    padding: 0.75rem 1rem;
+  }
+
+  .doc-chapter p {
+    font-size: 0.9rem;
+  }
+
+  .step-label {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+
+/* ===================================================================
+   XXVII. RESPONSIVE — 480px breakpoint (deep mobile)
+   =================================================================== */
+
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+
+  #app {
+    padding: 0.75rem;
+  }
+
+  header {
+    padding: 1.5rem 0 1rem;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  header .sigil {
+    font-size: 1rem;
+  }
+
+  header .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .intro-card {
+    padding: 1rem;
+    min-height: 260px;
+  }
+
+  .intro-lines p {
+    font-size: 1rem;
+  }
+
+  .flip-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.7rem;
+  }
+
+  .title-back {
+    font-size: 1.6rem;
+  }
+
+  .sigil-back {
+    font-size: 1.8rem;
+  }
+
+  .brief-box {
+    padding: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+
+  .brief-box h1 {
+    font-size: 1.1rem;
+  }
+
+  .brief-box h2 {
+    font-size: 1rem;
+  }
+
+  .curate-card-top {
+    padding: 0.6rem;
+    gap: 0.6rem;
+  }
+
+  .curate-plain-title {
+    font-size: 0.95rem;
+  }
+
+  .curate-plain-summary {
+    font-size: 0.82rem;
+  }
+
+  .curate-expand {
+    padding-left: calc(18px + 1.35rem);
+  }
+
+  .curate-expand-btn {
+    padding-left: calc(18px + 1.35rem);
+  }
+
+  .btn-primary {
+    font-size: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .btn-secondary {
+    font-size: 0.7rem;
+    padding: 0.6rem;
+  }
+
+  .export-btn {
+    font-size: 0.6rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .export-hint {
+    font-size: 0.72rem;
+  }
+
+  .landing-section p {
+    font-size: 0.88rem;
+  }
+
+  .landing-accent {
+    font-size: 0.95rem;
+  }
+
+  .landing-kicker {
+    font-size: 1rem;
+  }
+
+  .compare-kicker {
+    font-size: 0.95rem;
+  }
+
+  .flow-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.85rem;
+  }
+
+  .flow-label {
+    font-size: 0.55rem;
+  }
+
+  .flow-detail {
+    font-size: 0.7rem;
+  }
+
+  .prompt-display {
+    font-size: 0.65rem;
+    padding: 0.6rem 0.75rem;
+    max-height: 200px;
+  }
+
+  #stream-out {
+    font-size: 0.7rem;
+    max-height: 40vh;
+    padding: 0.75rem;
+  }
+
+  .provenance-log {
+    font-size: 0.65rem;
+    max-height: 180px;
+  }
+
+  .doc-chapter h2 {
+    font-size: 1.1rem;
+  }
+
+  .doc-chapter h3 {
+    font-size: 0.95rem;
+  }
+
+  .doc-chapter p {
+    font-size: 0.85rem;
+  }
+
+  .doc-chapter li {
+    font-size: 0.85rem;
+  }
+
+  .about-toggle span:first-child {
+    font-size: 0.55rem;
+  }
+
+  .footer-title {
+    font-size: 1rem;
+  }
+
+  .footer-sigil {
+    font-size: 0.85rem;
+  }
+
+  .info-tip::after {
+    width: 220px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.65rem;
+  }
+}
+
+
+/* ===================================================================
+   XXVIII. SMOOTH TRANSITIONS ON INTERACTIVE ELEMENTS
+   =================================================================== */
+
+button,
+a,
+summary,
+input,
+textarea,
+select,
+details,
+.curate-card,
+.compare-item,
+.flow-step,
+.export-option {
+  transition-property: color, background, border-color, box-shadow, opacity, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Ensure details marker styling is minimal and consistent */
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details > summary::before {
+  content: '\25B8';
+  display: inline-block;
+  margin-right: 0.5em;
+  transition: transform 0.2s ease;
+  font-size: 0.7em;
+}
+
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+
+/* ===================================================================
+   XXIX. CUSTOM SCROLLBAR (WebKit)
+   =================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-soft);
+}
+
+
+/* ===================================================================
+   XXX. PRINT STYLES
+   =================================================================== */
+
+@media print {
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  #intro,
+  #skip-intro,
+  .about-section,
+  #settings,
+  footer,
+  #site-footer,
+  .btn-primary,
+  .btn-secondary,
+  .btn-small,
+  .btn-back,
+  .curate-actions,
+  .export-section,
+  .search-settings,
+  .prompt-peek,
+  .search-disclosure {
+    display: none !important;
+  }
+
+  .brief-box {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 1.5rem;
+    color: #111;
+  }
+
+  .brief-box h1 {
+    color: #333;
+  }
+
+  .brief-box h2 {
+    color: #444;
+    border-bottom-color: #ddd;
+  }
+
+  .brief-box p {
+    color: #333;
+  }
+
+  .brief-box .pmid,
+  .brief-box .receipt {
+    color: #666;
+    background: #f0f0f0;
+  }
+}
